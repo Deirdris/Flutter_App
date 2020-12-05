@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "393233570855",
+    "project_id": "chores-c63ad",
+    "storage_bucket": "chores-c63ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:393233570855:android:f1092326aed263de4bc202",
+        "android_client_info": {
+          "package_name": "com.example.chores_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "393233570855-sqdr0284smeme29016eld6j48tkghg0n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chores_flutter",
+            "certificate_hash": "c5c80ba28958d4b982a326f90b0c5eb024ac8bf2"
+          }
+        },
+        {
+          "client_id": "393233570855-gtbjahikkjbup448h7o20mmm6haebqr6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFonxFrCv3mqIDkhsV0QTou2xQWGNBFKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "393233570855-gtbjahikkjbup448h7o20mmm6haebqr6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,3 +1,5 @@
+import 'package:chores_flutter/data/chores_user.dart';
+import 'package:chores_flutter/data/jobs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,24 +11,23 @@ class ChoresAddPage extends StatefulWidget {
   _ChoresAddPageState createState() => _ChoresAddPageState();
 }
 
-class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveClientMixin{
+class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveClientMixin {
   final durationController = TextEditingController();
   final dateController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  Job formModel = Job();
 
-  final formModel = JobModel();
-
-  void unfocus(){
+  void unfocus() {
     FocusScopeNode currentFocus = FocusScope.of(context);
 
-    if(!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null){
+    if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
       FocusManager.instance.primaryFocus.unfocus();
     }
   }
 
   @override
-  void dispose(){
+  void dispose() {
     durationController.dispose();
     dateController.dispose();
     super.dispose();
@@ -53,7 +54,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
               ),
               textInputAction: TextInputAction.next,
               maxLength: 50,
-              onChanged: (value){
+              onChanged: (value) {
                 formModel.job = value;
               },
             ),
@@ -79,7 +80,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                       context: context,
                       initialTime: TimeOfDay(hour: 0, minute: 0),
                     ).then((time) {
-                      if(time != null) {
+                      if (time != null) {
                         setState(() {
                           var duration = time.format(context).toString();
                           formModel.duration = duration;
@@ -105,7 +106,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                   decoration: InputDecoration(
                     alignLabelWithHint: true,
                     labelText: 'Data',
-                        //(_dateTime == null ? 'Data nie została wybrana' : DateFormat('dd.MM.yyyy').format(_dateTime)),
+                    //(_dateTime == null ? 'Data nie została wybrana' : DateFormat('dd.MM.yyyy').format(_dateTime)),
                   ),
                 ),
                 IconButton(
@@ -120,7 +121,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2222),
                     ).then((date) {
-                      if(date != null) {
+                      if (date != null) {
                         setState(() {
                           formModel.date = date;
                           dateController.text = DateFormat('dd.MM.yyyy').format(date).toString();
@@ -141,10 +142,15 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                 Expanded(
                   child: RaisedButton(
                     onPressed: () {
-                      Provider.of<JobsModel>(context, listen: false).add(JobModel.from(formModel));
+                      var user = Provider.of<ChoresUser>(context, listen: false).user;
+                      formModel
+                        ..user = user.uid
+                        ..userDisplayName = user.displayName.split(" ").first;
+                      Provider.of<Jobs>(context, listen: false).add(Job.from(formModel));
                       formKey.currentState.reset();
                       durationController.clear();
                       dateController.clear();
+                      formModel = Job();
                     },
                     child: Text(
                       'Dodaj',
