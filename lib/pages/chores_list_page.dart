@@ -1,5 +1,5 @@
 import 'package:chores_flutter/data/jobs.dart';
-import 'package:chores_flutter/models.dart';
+import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -20,35 +20,25 @@ class _ChoresListPageState extends State<ChoresListPage> with AutomaticKeepAlive
     super.build(context);
     SizedBox marginBox = SizedBox(height: 16);
 
-    if(!Provider.of<Jobs>(context, listen: false).hasFetchedData){
-      future = Provider.of<Jobs>(context, listen: false).fetchData();
+    var provider = Provider.of<Jobs>(context, listen: false);
+
+    if(!provider.hasFetchedData){
+      future = provider.fetchData();
     }else{
-      future = Provider.of<Jobs>(context, listen: false).fetchFuture;
+      future = provider.fetchFuture;
     }
 
     return Consumer<Jobs>(
-      builder: (context, value, child) => FutureBuilder(
+      builder: (context, value, child) => FutureHandler(
         future: future,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.done) {
-            return ListView(
-              children: [
-                for (var job in value.jobs) ...[
-                  _Job(job: job),
-                  marginBox,
-                ],
-              ],
-            );
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+        onDone: (_) => ListView(
+          children: [
+            for (var job in value.jobs) ...[
+              _Job(job: job),
+              marginBox,
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -104,7 +94,7 @@ class _Job extends StatelessWidget {
                       "Czas trwania",
                       style: TextStyle(color: Theme.of(context).hintColor),
                     ),
-                    Text(job.duration,
+                    Text('${job.duration} minut',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         )),

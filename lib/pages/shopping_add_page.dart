@@ -1,7 +1,9 @@
+import 'package:chores_flutter/data/chores_user.dart';
+import 'package:chores_flutter/pages/spin_me.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models.dart';
+import 'package:chores_flutter/data/cart.dart';
 import 'package:provider/provider.dart';
 
 class ShoppingAddPage extends StatefulWidget {
@@ -9,23 +11,23 @@ class ShoppingAddPage extends StatefulWidget {
   _ChoresAddPageState createState() => _ChoresAddPageState();
 }
 
-class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAliveClientMixin{
+class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAliveClientMixin {
   final dateController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool isSaving = false;
 
+  Shopping formModel = Shopping();
 
-  final formModel = ShoppingModel();
-
-  void unfocus(){
+  void unfocus() {
     FocusScopeNode currentFocus = FocusScope.of(context);
 
-    if(!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null){
+    if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
       FocusManager.instance.primaryFocus.unfocus();
     }
   }
 
   @override
-  void dispose(){
+  void dispose() {
     dateController.dispose();
     super.dispose();
   }
@@ -51,31 +53,60 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
               ),
               textInputAction: TextInputAction.next,
               maxLength: 50,
-              onChanged: (value){
+              onChanged: (value) {
                 formModel.bought = value;
+              },
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Proszę podać zakupiony przedmiot';
+                }
+                return null;
               },
             ),
             TextFormField(
+              maxLength: 10,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
+                counterText: "",
                 labelText: 'Cena',
                 alignLabelWithHint: true,
+                errorStyle: TextStyle(height: 0),
+                suffixIcon: Padding(
+                    padding: EdgeInsets.only(top: 18, right: 18),
+                    child: Text(
+                      "zł",
+                      style: TextStyle(fontSize: 16),
+                    )),
+                suffixIconConstraints: BoxConstraints(maxWidth: 32),
               ),
-              onChanged: (value){
-                formModel.price = int.parse(value);
+              onChanged: (value) {
+                formModel.price = double.parse(value);
+              },
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '';
+                }
+                return null;
               },
             ),
             marginBox,
             Stack(
               alignment: Alignment.bottomRight,
               children: [
-                TextField(
-                  enabled: false,
+                TextFormField(
+                  readOnly: true,
                   controller: dateController,
                   decoration: InputDecoration(
                     alignLabelWithHint: true,
                     labelText: 'Data',
+                    errorStyle: TextStyle(height: 0),
                   ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return '';
+                    }
+                    return null;
+                  },
                 ),
                 IconButton(
                   visualDensity: VisualDensity(vertical: -3),
@@ -88,7 +119,7 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2222),
                     ).then((date) {
-                      if(date != null) {
+                      if (date != null) {
                         setState(() {
                           formModel.date = date;
                           dateController.text = DateFormat('dd.MM.yyyy').format(date).toString();
@@ -96,7 +127,10 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
                       }
                     });
                   },
-                  icon: Icon(Icons.calendar_today, size: 20,),
+                  icon: Icon(
+                    Icons.calendar_today,
+                    size: 20,
+                  ),
                 ),
               ],
             ),
@@ -104,15 +138,34 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
             Row(
               children: [
                 Expanded(
-                  child: RaisedButton(
-                    onPressed: () {
-                      Provider.of<CartModel>(context, listen: false).add(ShoppingModel.from(formModel));
-                      formKey.currentState.reset();
-                      dateController.clear();
+                  child: RaisedButton.icon(
+                    onPressed: () async {
+                      if (formKey.currentState.validate()) {
+                        setState(() {
+                          isSaving = true;
+                        });
+                        var provider = Provider.of<ChoresUser>(context, listen: false);
+                        var user = provider.user;
+                        formModel
+                          ..user = user.uid
+                          ..userDisplayName = user.displayName.split(" ").first;
+                        provider.userData.sumSpent += formModel.price;
+                        await Provider.of<AllShopping>(context, listen: false).add(Shopping.from(formModel));
+                        await provider.saveData();
+                        formKey.currentState.reset();
+                        dateController.clear();
+                        formModel = Shopping();
+                        setState(() {
+                          isSaving = false;
+                        });
+                      }
                     },
-                    child: Text(
-                      'Dodaj',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                    icon: Icon(Icons.save,
+                    color: Colors.white,
+                      size: 20,
+                    ),
+                    label: SpinMe(
+                      isSaving: isSaving,
                     ),
                   ),
                 ),

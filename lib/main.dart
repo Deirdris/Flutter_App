@@ -5,13 +5,13 @@ import 'package:chores_flutter/routes.dart';
 import 'package:chores_flutter/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'models.dart';
+import 'data/cart.dart';
 
 void main() => runApp(
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => Jobs()),
-          ChangeNotifierProvider(create: (context) => CartModel()),
+          ChangeNotifierProvider(create: (context) => AllShopping()),
           ChangeNotifierProvider(create: (context) => ChoresUser()),
         ],
         child: MyApp(),

@@ -1,4 +1,5 @@
-import 'package:chores_flutter/models.dart';
+import 'package:chores_flutter/data/cart.dart';
+import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -11,19 +12,31 @@ class ShoppingListPage extends StatefulWidget {
 class _ShoppingListPageState extends State<ShoppingListPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+  Future future;
 
   @override
   Widget build(BuildContext context) {
     SizedBox marginBox = SizedBox(height: 16);
 
-    return Consumer<CartModel>(
-      builder: (context, value, child) => ListView(
-        children: [
-          for (var shopping in value.cart) ...[
-            _Shopping(shopping: shopping),
-            marginBox,
+    var provider = Provider.of<AllShopping>(context, listen: false);
+
+    if(!provider.hasFetchedData){
+      future = provider.fetchData();
+    }else{
+      future = provider.fetchFuture;
+    }
+
+    return Consumer<AllShopping>(
+      builder: (context, value, child) => FutureHandler(
+        future: future,
+        onDone: (_) => ListView(
+          children: [
+            for (var shopping in value.cart) ...[
+              _Shopping(shopping: shopping),
+              marginBox,
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -34,7 +47,7 @@ class _Shopping extends StatelessWidget {
     @required this.shopping,
   });
 
-  final ShoppingModel shopping;
+  final Shopping shopping;
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +63,22 @@ class _Shopping extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                     child: Text(
                   shopping.bought,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 )),
+                Text(
+                  shopping.userDisplayName,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 4),
                 Icon(
                   Icons.monetization_on,
                   color: Colors.amber,
+                  size: 18,
                 ),
               ],
             ),

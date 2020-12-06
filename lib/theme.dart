@@ -18,6 +18,7 @@ const MaterialColor blueGrey = MaterialColor(
 const int _blueGreyPrimaryValue = 0xFF263238;
 
 final theme = ThemeData(
+  errorColor: Colors.red[900],
   scaffoldBackgroundColor: Colors.blueGrey[100],
   appBarTheme: AppBarTheme(
     color: Colors.blueGrey[900],

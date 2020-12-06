@@ -1,3 +1,4 @@
+import 'package:chores_flutter/pages/chart_list.dart';
 import 'package:chores_flutter/pages/chores_page.dart';
 import 'package:chores_flutter/pages/shopping_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +25,7 @@ final routes = {
   ),
   '/charts': RouteEntry(
     title: 'Wykresiki',
-    builder: (context) => Container(),
+    builder: (context) => ChartList(),
     icon: Icons.bar_chart,
   ),
 };

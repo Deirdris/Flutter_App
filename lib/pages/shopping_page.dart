@@ -13,7 +13,7 @@ class ShoppingPage extends StatefulWidget {
 class _MyBodyState extends State<ShoppingPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   PageController _pageController;
-  int _currentIndex = 1;
+  int _currentIndex = 0;
 
   @override
   void initState() {

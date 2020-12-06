@@ -1,9 +1,10 @@
 import 'package:chores_flutter/data/chores_user.dart';
 import 'package:chores_flutter/data/jobs.dart';
+import 'package:chores_flutter/pages/spin_me.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models.dart';
 import 'package:provider/provider.dart';
 
 class ChoresAddPage extends StatefulWidget {
@@ -15,6 +16,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
   final durationController = TextEditingController();
   final dateController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool isSaving = false;
 
   Job formModel = Job();
 
@@ -48,6 +50,12 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
         child: Column(
           children: [
             TextFormField(
+              validator: (value){
+                if(value.isEmpty){
+                  return 'Proszę podać wykonaną czynność';
+                }
+                return null;
+              },
               decoration: InputDecoration(
                 labelText: 'Co zostało zrobione',
                 alignLabelWithHint: true,
@@ -62,12 +70,19 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
               alignment: Alignment.bottomRight,
               children: [
                 TextFormField(
-                  enabled: false,
+                  validator: (value){
+                    if(value.isEmpty){
+                      return '';
+                    }
+                    return null;
+                  },
+                  readOnly: true,
                   controller: durationController,
                   keyboardType: TextInputType.datetime,
                   decoration: InputDecoration(
-                    labelText: 'Czas trwania [hh]:[mm]',
+                    labelText: 'Czas trwania',
                     alignLabelWithHint: true,
+                    errorStyle: TextStyle(height: 0),
                   ),
                 ),
                 IconButton(
@@ -82,9 +97,9 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                     ).then((time) {
                       if (time != null) {
                         setState(() {
-                          var duration = time.format(context).toString();
+                          var duration = time.minute;
                           formModel.duration = duration;
-                          durationController.text = duration;
+                          durationController.text = '$duration minut';
                         });
                       }
                     });
@@ -101,12 +116,18 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
               alignment: Alignment.bottomRight,
               children: [
                 TextFormField(
-                  enabled: false,
+                  validator: (value){
+                    if(value.isEmpty){
+                      return '';
+                    }
+                    return null;
+                  },
+                  readOnly: true,
                   controller: dateController,
                   decoration: InputDecoration(
                     alignLabelWithHint: true,
                     labelText: 'Data',
-                    //(_dateTime == null ? 'Data nie została wybrana' : DateFormat('dd.MM.yyyy').format(_dateTime)),
+                    errorStyle: TextStyle(height: 0),
                   ),
                 ),
                 IconButton(
@@ -141,20 +162,32 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
               children: [
                 Expanded(
                   child: RaisedButton(
-                    onPressed: () {
-                      var user = Provider.of<ChoresUser>(context, listen: false).user;
-                      formModel
-                        ..user = user.uid
-                        ..userDisplayName = user.displayName.split(" ").first;
-                      Provider.of<Jobs>(context, listen: false).add(Job.from(formModel));
-                      formKey.currentState.reset();
-                      durationController.clear();
-                      dateController.clear();
-                      formModel = Job();
+                    onPressed: () async {
+                      if(formKey.currentState.validate()) {
+                        setState(() {
+                          isSaving = true;
+                        });
+                        var provider = Provider.of<ChoresUser>(context, listen: false);
+                        var user = provider.user;
+                        formModel
+                          ..user = user.uid
+                          ..userDisplayName = user.displayName
+                              .split(" ")
+                              .first;
+                        provider.userData.overallDuration += formModel.duration;
+                        await Provider.of<Jobs>(context, listen: false).add(Job.from(formModel));
+                        await provider.saveData();
+                        formKey.currentState.reset();
+                        durationController.clear();
+                        dateController.clear();
+                        formModel = Job();
+                        setState(() {
+                          isSaving = false;
+                        });
+                      }
                     },
-                    child: Text(
-                      'Dodaj',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                    child: SpinMe(
+                      isSaving: isSaving,
                     ),
                   ),
                 ),
