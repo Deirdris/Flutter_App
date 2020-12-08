@@ -91,7 +91,7 @@ class UserData {
 
   String id;
   String displayName;
-  int overallDuration;
+  double overallDuration;
   double sumSpent;
 
   UserData.from(UserData other) {
@@ -103,7 +103,7 @@ class UserData {
   UserData.fromFirestore(Map data, [String id]) {
     this.id = id;
     displayName = data["displayName"];
-    overallDuration = data["overallDuration"];
+    overallDuration = data["overallDuration"] is int ? data['overallDuration'].toDouble() : data['overallDuration'];
     sumSpent = data["sumSpent"] is int ? data["sumSpent"].toDouble() : data["sumSpent"];
   }
 

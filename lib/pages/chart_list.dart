@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chores_flutter/controllers/jobs_controller.dart';
 import 'package:chores_flutter/controllers/user_controller.dart';
 import 'package:chores_flutter/default_scaffold.dart';
 import 'package:chores_flutter/widgets/future_handler.dart';
@@ -7,8 +8,59 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import 'package:chores_flutter/controllers/shopping_controller.dart';
+
+enum DataSource {
+  jobs,
+  shopping,
+}
+
+extension DataSourceExtension on DataSource {
+  getCollection() {
+    switch (this) {
+      case DataSource.jobs:
+        return 'jobs';
+      case DataSource.shopping:
+        return 'shopping';
+    }
+  }
+
+  getTitle() {
+    switch (this) {
+      case DataSource.jobs:
+        return 'Stracony czas';
+      case DataSource.shopping:
+        return 'Wydany pieniądz';
+    }
+  }
+
+  dynamic fromFirestore(Map data) {
+    switch (this) {
+      case DataSource.jobs:
+        return Job.fromFirestore(data);
+      case DataSource.shopping:
+        return Shopping.fromFirestore(data);
+    }
+  }
+
+  dynamic getValue(dynamic data) {
+    switch (this) {
+      case DataSource.jobs:
+        return data.duration;
+      case DataSource.shopping:
+        return data.price;
+    }
+  }
+
+  dynamic getSum(UserData data) {
+    switch (this) {
+      case DataSource.jobs:
+        return data.overallDuration;
+      case DataSource.shopping:
+        return data.sumSpent;
+    }
+  }
+}
 
 enum ChartType {
   week,
@@ -41,13 +93,15 @@ class ChartList extends StatefulWidget {
   _ChartListState createState() => _ChartListState();
 }
 
-class _ChartListState extends State<ChartList> {
+class _ChartListState extends State<ChartList> with SingleTickerProviderStateMixin {
   Future future;
-  List<Shopping> data;
+  Map<DataSource, List<dynamic>> data;
   List<UserData> users;
+  final dataSource = DataSource.shopping.obs;
   final chartData = RxMap<String, ChartData>();
   final chartType = ChartType.month.obs;
-
+  AnimationController animationController;
+  Animation<double> animation;
 
   List<ChartData> get chartDataList => chartData.values.toList();
 
@@ -55,13 +109,18 @@ class _ChartListState extends State<ChartList> {
       chartDataList.fold(0, (previousValue, element) => element.sum > previousValue ? element.sum : previousValue);
 
   fetchData() async {
-    var userQuerySnapshot = await FirebaseFirestore.instance.collection("users").get();
-    users = userQuerySnapshot.docs.map((element) => UserData.fromFirestore(element.data(), element.id)).toList();
+    if (users == null) {
+      var userQuerySnapshot = await FirebaseFirestore.instance.collection("users").get();
+      users = userQuerySnapshot.docs.map((element) => UserData.fromFirestore(element.data(), element.id)).toList();
+    }
     var querySnapshot = await FirebaseFirestore.instance
-        .collection("shopping")
+        .collection(dataSource().getCollection())
         .where("date", isGreaterThan: DateTime.now().subtract(Duration(days: 30)))
         .get();
-    data = querySnapshot.docs.map((element) => Shopping.fromFirestore(element.data())).toList();
+    if (data == null) {
+      data = {};
+    }
+    data[dataSource()] = querySnapshot.docs.map((element) => dataSource().fromFirestore(element.data())).toList();
     updateChartData();
   }
 
@@ -72,23 +131,39 @@ class _ChartListState extends State<ChartList> {
       case ChartType.week:
       case ChartType.month:
         var data = chartType() == ChartType.month
-            ? this.data
-            : this.data.where((element) =>
+            ? this.data[dataSource()]
+            : this.data[dataSource()].where((element) =>
                 element.date.millisecondsSinceEpoch >=
                 DateTime.now().subtract(Duration(days: 7)).millisecondsSinceEpoch);
-        for (var shopping in data) {
-          if (chartData[shopping.user] == null) {
-            chartData[shopping.user] = ChartData(users.firstWhere((element) => element.id == shopping.user));
+        for (var dataEntry in data) {
+          if (chartData[dataEntry.user] == null) {
+            chartData[dataEntry.user] = ChartData(users.firstWhere((element) => element.id == dataEntry.user));
           }
-          chartData[shopping.user].sum += shopping.price;
+          chartData[dataEntry.user].sum += dataSource().getValue(dataEntry);
         }
         break;
       case ChartType.lifetime:
         users.forEach((element) {
-          chartData[element.id] = ChartData(element)..sum = element.sumSpent;
+          chartData[element.id] = ChartData(element)..sum = dataSource().getSum(element);
         });
         break;
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 350),
+      upperBound: 0.5,
+    );
+
+    animation = CurvedAnimation(
+      parent: animationController,
+      curve: Curves.slowMiddle,
+    );
   }
 
   @override
@@ -154,11 +229,13 @@ class _ChartListState extends State<ChartList> {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          "Wydany pieniądz na miesiąc",
-                          style:
-                              TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).primaryColor),
-                          textAlign: TextAlign.center,
+                        child: Obx(
+                          () => Text(
+                            dataSource().getTitle(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).primaryColor),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ],
@@ -174,8 +251,20 @@ class _ChartListState extends State<ChartList> {
                         child: IconButton(
                           padding: EdgeInsets.all(4),
                           visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                          icon: Icon(Icons.cached, color: Theme.of(context).backgroundColor, size: 24),
-                          onPressed: () {},
+                          icon: RotationTransition(
+                            turns: animation,
+                            child: Icon(Icons.cached, color: Theme.of(context).backgroundColor, size: 24),
+                          ),
+                          onPressed: () {
+                            animationController.reset();
+                            animationController.forward();
+                            dataSource.value = DataSource.values[(dataSource().index + 1) % (DataSource.values.length)];
+                            if (data[dataSource()] == null) {
+                              future = fetchData();
+                            } else {
+                              updateChartData();
+                            }
+                          },
                         ),
                       ),
                     ),

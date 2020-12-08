@@ -3,8 +3,28 @@ import 'package:chores_flutter/controllers//jobs_controller.dart';
 import 'package:chores_flutter/widgets/spin_me.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
+class MinutePicker extends TimePickerModel {
+  MinutePicker(): super(currentTime: DateTime(0));
+
+  @override
+  List<int> layoutProportions() {
+    return [0, 1, 0];
+  }
+
+  @override
+  String leftDivider() {
+    return "";
+  }
+
+  @override
+  String rightDivider() {
+    return ":";
+  }
+}
 
 class ChoresAddPage extends StatefulWidget {
   @override
@@ -50,8 +70,8 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
         child: Column(
           children: [
             TextFormField(
-              validator: (value){
-                if(value.isEmpty){
+              validator: (value) {
+                if (value.isEmpty) {
                   return 'Proszę podać wykonaną czynność';
                 }
                 return null;
@@ -70,8 +90,8 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
               alignment: Alignment.bottomRight,
               children: [
                 TextFormField(
-                  validator: (value){
-                    if(value.isEmpty){
+                  validator: (value) {
+                    if (value.isEmpty) {
                       return '';
                     }
                     return null;
@@ -91,18 +111,35 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                   splashRadius: 24,
                   onPressed: () {
                     unfocus();
-                    showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay(hour: 0, minute: 0),
-                    ).then((time) {
-                      if (time != null) {
+                    DatePicker.showPicker(
+                      context,
+                      locale: LocaleType.pl,
+                      pickerModel: MinutePicker(),
+                      theme: DatePickerTheme(
+                        doneStyle: TextStyle(color: Colors.amber),
+                        cancelStyle: TextStyle(color: Colors.black.withAlpha(220)),
+                      ),
+                    ).then((value) {
+                      if(value != null){
                         setState(() {
-                          var duration = time.minute;
+                          var duration = value.minute;
                           formModel.duration = duration;
                           durationController.text = '$duration minut';
                         });
                       }
                     });
+                    // showTimePicker(
+                    //   context: context,
+                    //   initialTime: TimeOfDay(hour: 0, minute: 0),
+                    // ).then((time) {
+                    //   if (time != null) {
+                    //     setState(() {
+                    //       var duration = time.minute;
+                    //       formModel.duration = duration;
+                    //       durationController.text = '$duration minut';
+                    //     });
+                    //   }
+                    // });
                   },
                   icon: Icon(
                     Icons.access_time_outlined,
@@ -116,8 +153,8 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
               alignment: Alignment.bottomRight,
               children: [
                 TextFormField(
-                  validator: (value){
-                    if(value.isEmpty){
+                  validator: (value) {
+                    if (value.isEmpty) {
                       return '';
                     }
                     return null;
@@ -140,7 +177,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(2000),
-                      lastDate: DateTime(2222),
+                      lastDate: DateTime.now(),
                     ).then((date) {
                       if (date != null) {
                         setState(() {
@@ -163,16 +200,14 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                 Expanded(
                   child: RaisedButton(
                     onPressed: () async {
-                      if(formKey.currentState.validate()) {
+                      if (formKey.currentState.validate()) {
                         setState(() {
                           isSaving = true;
                         });
                         var user = userController.user;
                         formModel
                           ..user = user.uid
-                          ..userDisplayName = user.displayName
-                              .split(" ")
-                              .first;
+                          ..userDisplayName = user.displayName.split(" ").first;
                         userController.userData.overallDuration += formModel.duration;
                         await Get.find<JobsController>().add(Job.from(formModel));
                         await userController.saveData();

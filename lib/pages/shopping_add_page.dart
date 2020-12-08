@@ -118,7 +118,7 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(2000),
-                      lastDate: DateTime(2222),
+                      lastDate: DateTime.now(),
                     ).then((date) {
                       if (date != null) {
                         setState(() {
