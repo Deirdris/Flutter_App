@@ -1,22 +1,10 @@
 import 'package:chores_flutter/bootstrap.dart';
-import 'package:chores_flutter/data/chores_user.dart';
-import 'package:chores_flutter/data/jobs.dart';
 import 'package:chores_flutter/routes.dart';
 import 'package:chores_flutter/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'data/cart.dart';
+import 'package:get/get.dart';
 
-void main() => runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => Jobs()),
-          ChangeNotifierProvider(create: (context) => AllShopping()),
-          ChangeNotifierProvider(create: (context) => ChoresUser()),
-        ],
-        child: MyApp(),
-      ),
-    );
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -29,7 +17,7 @@ class MyApp extends StatelessWidget {
           FocusManager.instance.primaryFocus.unfocus();
         }
       },
-      child: MaterialApp(
+      child: GetMaterialApp(
         // onGenerateRoute: (settings) {
         //   if (routes[settings.name] != null) {
         //     return PageRouteBuilder(

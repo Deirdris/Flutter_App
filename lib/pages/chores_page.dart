@@ -3,56 +3,42 @@ import 'package:chores_flutter/pages/chores_add_page.dart';
 import 'package:chores_flutter/pages/chores_list_page.dart';
 import 'package:chores_flutter/pages/default_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class ChoresPage extends StatefulWidget {
-  ChoresPage({Key key}) : super(key: key);
+class _ChoresPageController extends GetxController {
+  final pageController = PageController();
 
   @override
-  _MyBodyState createState() => _MyBodyState();
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
+  }
 }
 
-class _MyBodyState extends State<ChoresPage>{
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  PageController _pageController;
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _pageController = PageController(initialPage: _currentIndex);
-  }
-
-  @override
-  void dispose(){
-    _pageController.dispose();
-    super.dispose();
-  }
+class ChoresPage extends StatelessWidget {
+  final controller = Get.put(_ChoresPageController());
+  final currentIndex = 0.obs;
 
   Widget build(BuildContext context) {
     return DefaultScaffold(
       body: PageView(
-        controller: _pageController,
-        onPageChanged: (index){
-          setState(() {
-            _currentIndex = index;
-          });
+        controller: controller.pageController,
+        onPageChanged: (index) {
+          currentIndex.value = index;
         },
         children: [
           ChoresListPage(),
           ChoresAddPage(),
         ],
       ),
-      bottomNavigationBar: DefaultBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index){
-          setState(() {
-            _pageController.animateToPage(index, duration: Duration(milliseconds: 250), curve: Curves.ease);
-          });
-        },
+      bottomNavigationBar: Obx(
+        () => DefaultBottomNavigationBar(
+          currentIndex: currentIndex(),
+          onTap: (index) {
+            controller.pageController.animateToPage(index, duration: Duration(milliseconds: 250), curve: Curves.ease);
+          },
+        ),
       ),
     );
   }
 }
-
-

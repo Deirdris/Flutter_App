@@ -2,13 +2,34 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class ChoresUser extends ChangeNotifier {
+class UserController extends GetxController {
   User user;
   DocumentReference userDoc;
   UserData userData;
+
+  Future fetchFuture;
+
+  @override
+  void onInit(){
+    super.onInit();
+
+    fetchFuture = init();
+  }
+
+  Future init() async {
+    await Firebase.initializeApp();
+    bool isAuthenticated = await checkAuthStatus();
+    if(!isAuthenticated){
+      await signin();
+    }else{
+      await fetchUserData();
+    }
+  }
 
   Future fetchUserData() async {
     userDoc = FirebaseFirestore.instance.collection("users").doc(user.uid);
@@ -62,11 +83,13 @@ class ChoresUser extends ChangeNotifier {
 
 class UserData {
   UserData({
+    this.id,
     this.displayName,
     this.overallDuration,
     this.sumSpent,
   });
 
+  String id;
   String displayName;
   int overallDuration;
   double sumSpent;
@@ -77,7 +100,8 @@ class UserData {
     sumSpent = other.sumSpent;
   }
 
-  UserData.fromFirestore(Map data) {
+  UserData.fromFirestore(Map data, [String id]) {
+    this.id = id;
     displayName = data["displayName"];
     overallDuration = data["overallDuration"];
     sumSpent = data["sumSpent"] is int ? data["sumSpent"].toDouble() : data["sumSpent"];

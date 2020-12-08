@@ -1,11 +1,10 @@
-import 'package:chores_flutter/data/chores_user.dart';
-import 'package:chores_flutter/data/jobs.dart';
-import 'package:chores_flutter/pages/spin_me.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chores_flutter/controllers//user_controller.dart';
+import 'package:chores_flutter/controllers//jobs_controller.dart';
+import 'package:chores_flutter/widgets/spin_me.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class ChoresAddPage extends StatefulWidget {
   @override
@@ -16,6 +15,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
   final durationController = TextEditingController();
   final dateController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final userController = Get.find<UserController>();
   bool isSaving = false;
 
   Job formModel = Job();
@@ -167,16 +167,15 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                         setState(() {
                           isSaving = true;
                         });
-                        var provider = Provider.of<ChoresUser>(context, listen: false);
-                        var user = provider.user;
+                        var user = userController.user;
                         formModel
                           ..user = user.uid
                           ..userDisplayName = user.displayName
                               .split(" ")
                               .first;
-                        provider.userData.overallDuration += formModel.duration;
-                        await Provider.of<Jobs>(context, listen: false).add(Job.from(formModel));
-                        await provider.saveData();
+                        userController.userData.overallDuration += formModel.duration;
+                        await Get.find<JobsController>().add(Job.from(formModel));
+                        await userController.saveData();
                         formKey.currentState.reset();
                         durationController.clear();
                         dateController.clear();

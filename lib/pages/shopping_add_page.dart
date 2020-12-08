@@ -1,10 +1,10 @@
-import 'package:chores_flutter/data/chores_user.dart';
-import 'package:chores_flutter/pages/spin_me.dart';
+import 'package:chores_flutter/controllers//user_controller.dart';
+import 'package:chores_flutter/widgets/spin_me.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:chores_flutter/data/cart.dart';
-import 'package:provider/provider.dart';
+import 'package:chores_flutter/controllers//shopping_controller.dart';
 
 class ShoppingAddPage extends StatefulWidget {
   @override
@@ -14,6 +14,7 @@ class ShoppingAddPage extends StatefulWidget {
 class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAliveClientMixin {
   final dateController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final userController = Get.find<UserController>();
   bool isSaving = false;
 
   Shopping formModel = Shopping();
@@ -144,14 +145,13 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
                         setState(() {
                           isSaving = true;
                         });
-                        var provider = Provider.of<ChoresUser>(context, listen: false);
-                        var user = provider.user;
+                        var user = userController.user;
                         formModel
                           ..user = user.uid
                           ..userDisplayName = user.displayName.split(" ").first;
-                        provider.userData.sumSpent += formModel.price;
-                        await Provider.of<AllShopping>(context, listen: false).add(Shopping.from(formModel));
-                        await provider.saveData();
+                        userController.userData.sumSpent += formModel.price;
+                        await Get.find<ShoppingController>().add(Shopping.from(formModel));
+                        await userController.saveData();
                         formKey.currentState.reset();
                         dateController.clear();
                         formModel = Shopping();

@@ -1,6 +1,7 @@
-import 'package:chores_flutter/data/jobs.dart';
+import 'package:chores_flutter/controllers//jobs_controller.dart';
 import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +11,7 @@ class ChoresListPage extends StatefulWidget {
 }
 
 class _ChoresListPageState extends State<ChoresListPage> with AutomaticKeepAliveClientMixin {
-  Future future;
+  final jobsController = Get.put(JobsController(), permanent: true);
 
   @override
   bool get wantKeepAlive => true;
@@ -20,20 +21,12 @@ class _ChoresListPageState extends State<ChoresListPage> with AutomaticKeepAlive
     super.build(context);
     SizedBox marginBox = SizedBox(height: 16);
 
-    var provider = Provider.of<Jobs>(context, listen: false);
-
-    if(!provider.hasFetchedData){
-      future = provider.fetchData();
-    }else{
-      future = provider.fetchFuture;
-    }
-
-    return Consumer<Jobs>(
-      builder: (context, value, child) => FutureHandler(
-        future: future,
-        onDone: (_) => ListView(
+    return FutureHandler(
+      future: jobsController.fetchFuture,
+      onDone: (_) => Obx(
+        () => ListView(
           children: [
-            for (var job in value.jobs) ...[
+            for (var job in jobsController.jobs) ...[
               _Job(job: job),
               marginBox,
             ],
@@ -72,7 +65,8 @@ class _Job extends StatelessWidget {
                   job.job,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 )),
-                Text(job.userDisplayName,
+                Text(
+                  job.userDisplayName,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(width: 4),

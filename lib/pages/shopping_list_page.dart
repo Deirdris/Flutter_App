@@ -1,8 +1,8 @@
-import 'package:chores_flutter/data/cart.dart';
+import 'package:chores_flutter/controllers//shopping_controller.dart';
 import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class ShoppingListPage extends StatefulWidget {
   @override
@@ -10,28 +10,22 @@ class ShoppingListPage extends StatefulWidget {
 }
 
 class _ShoppingListPageState extends State<ShoppingListPage> with AutomaticKeepAliveClientMixin {
+  final shoppingController = Get.put(ShoppingController());
+
   @override
   bool get wantKeepAlive => true;
-  Future future;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     SizedBox marginBox = SizedBox(height: 16);
 
-    var provider = Provider.of<AllShopping>(context, listen: false);
-
-    if(!provider.hasFetchedData){
-      future = provider.fetchData();
-    }else{
-      future = provider.fetchFuture;
-    }
-
-    return Consumer<AllShopping>(
-      builder: (context, value, child) => FutureHandler(
-        future: future,
-        onDone: (_) => ListView(
+    return FutureHandler(
+      future: shoppingController.fetchFuture,
+      onDone: (_) => Obx(
+        () => ListView(
           children: [
-            for (var shopping in value.cart) ...[
+            for (var shopping in shoppingController.cart) ...[
               _Shopping(shopping: shopping),
               marginBox,
             ],

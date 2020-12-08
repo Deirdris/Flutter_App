@@ -1,9 +1,9 @@
-import 'package:chores_flutter/data/cart.dart';
-import 'package:chores_flutter/data/chores_user.dart';
+import 'package:chores_flutter/controllers//user_controller.dart';
 import 'package:chores_flutter/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +20,7 @@ class DefaultScaffold extends StatefulWidget {
 class _DefaultScaffoldState extends State<DefaultScaffold> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey drawerHeaderKey = GlobalKey();
+  final userController = Get.find<UserController>();
   AnimationController animationController;
 
   @override
@@ -60,10 +61,10 @@ class _DefaultScaffoldState extends State<DefaultScaffold> with SingleTickerProv
                   alignment: Alignment.bottomRight,
                   children: [
                     UserAccountsDrawerHeader(
-                      accountName: Text(Provider.of<ChoresUser>(context, listen: false).user.displayName),
-                      accountEmail: Text(Provider.of<ChoresUser>(context, listen: false).user.email),
+                      accountName: Text(userController.user.displayName),
+                      accountEmail: Text(userController.user.email),
                       currentAccountPicture: CircleAvatar(
-                        backgroundImage: NetworkImage(Provider.of<ChoresUser>(context, listen: false).user.photoURL),
+                        backgroundImage: NetworkImage(userController.user.photoURL),
                       ),
                     ),
                     GestureDetector(
@@ -122,7 +123,7 @@ class _DefaultScaffoldState extends State<DefaultScaffold> with SingleTickerProv
                         style: TextStyle(fontSize: 20),
                       ),
                       onTap: () {
-                        Navigator.pushNamed(context, route.key);
+                        Navigator.pushReplacementNamed(context, route.key);
                       },
                     ),
                   ),

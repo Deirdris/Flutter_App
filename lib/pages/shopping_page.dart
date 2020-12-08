@@ -3,52 +3,41 @@ import 'package:flutter/material.dart';
 import 'package:chores_flutter/default_scaffold.dart';
 import 'package:chores_flutter/pages/shopping_add_page.dart';
 import 'package:chores_flutter/pages/shopping_list_page.dart';
+import 'package:get/get.dart';
 
+class _ShoppingPageController extends GetxController {
+  PageController pageController = PageController();
 
-class ShoppingPage extends StatefulWidget {
   @override
-  _MyBodyState createState() => _MyBodyState();
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
+  }
 }
 
-class _MyBodyState extends State<ShoppingPage> {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  PageController _pageController;
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _pageController = PageController(initialPage: _currentIndex);
-  }
-
-  @override
-  void dispose(){
-    _pageController.dispose();
-    super.dispose();
-  }
+class ShoppingPage extends StatelessWidget {
+  final controller = Get.put(_ShoppingPageController());
+  final currentIndex = 0.obs;
 
   Widget build(BuildContext context) {
     return DefaultScaffold(
       body: PageView(
-        controller: _pageController,
-        onPageChanged: (index){
-          setState(() {
-            _currentIndex = index;
-          });
+        controller: controller.pageController,
+        onPageChanged: (index) {
+          currentIndex.value = index;
         },
         children: [
           ShoppingListPage(),
           ShoppingAddPage(),
         ],
       ),
-      bottomNavigationBar: DefaultBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index){
-          setState(() {
-            _pageController.animateToPage(index, duration: Duration(milliseconds: 250), curve: Curves.ease);
-          });
-        },
+      bottomNavigationBar: Obx(
+        () => DefaultBottomNavigationBar(
+          currentIndex: currentIndex(),
+          onTap: (index) {
+            controller.pageController.animateToPage(index, duration: Duration(milliseconds: 250), curve: Curves.ease);
+          },
+        ),
       ),
     );
   }

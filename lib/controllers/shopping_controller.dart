@@ -2,33 +2,35 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 
-class Job {
-  Job({
-    this.job,
-    this.duration,
+class Shopping {
+  Shopping({
+    this.bought,
+    this.price,
     this.date,
     this.user,
     this.userDisplayName,
   });
 
-  String job;
-  int duration;
+  String bought;
+  double price;
   DateTime date;
   String user;
   String userDisplayName;
+  static String collection = "shopping";
 
-  Job.from(Job other) {
-    job = other.job;
-    duration = other.duration;
+  Shopping.from(Shopping other) {
+    bought = other.bought;
+    price = other.price;
     date = other.date;
     user = other.user;
     userDisplayName = other.userDisplayName;
   }
 
-  Job.fromFirestore(Map data) {
-    job = data["job"];
-    duration = data["duration"];
+  Shopping.fromFirestore(Map data) {
+    bought = data["bought"];
+    price = data["price"] is int ? data["price"].toDouble() : data["price"];
     date = data["date"].toDate();
     user = data["user"];
     userDisplayName = data["userDisplayName"];
@@ -36,8 +38,8 @@ class Job {
 
   Map<String, dynamic> toFirestore() {
     return {
-      "job": job,
-      "duration": duration,
+      "bought": bought,
+      "price": price,
       "date": date,
       "user": user,
       "userDisplayName": userDisplayName,
@@ -45,43 +47,37 @@ class Job {
   }
 }
 
-class Jobs extends ChangeNotifier {
-  List<Job> _jobs = List();
+class ShoppingController extends GetxController {
+  final cart = RxList();
 
-  List<Job> get jobs => _jobs;
-
-  bool hasFetchedData = false;
   Future fetchFuture;
 
-  Future fetchData() {
-    hasFetchedData = true;
+  @override
+  void onInit(){
+    super.onInit();
+
     Completer completer = Completer();
     FirebaseFirestore.instance
-        .collection("jobs")
+        .collection("shopping")
         .orderBy("date", descending: true)
         .limit(10)
         .snapshots()
         .listen((event) {
       event.docChanges.forEach((change) {
         if (change.type == DocumentChangeType.added) {
-          _jobs.add(Job.fromFirestore(change.doc.data()));
+          cart.add(Shopping.fromFirestore(change.doc.data()));
         }
       });
-      _jobs.sort((a,b) => b.date.millisecondsSinceEpoch - a.date.millisecondsSinceEpoch);
+      cart.sort((a,b) => b.date.millisecondsSinceEpoch - a.date.millisecondsSinceEpoch);
       if (!completer.isCompleted) {
         completer.complete();
       }
-      notifyListeners();
     });
 
     fetchFuture = completer.future;
-
-    return completer.future;
   }
 
-  Future add(Job job) async {
-    await FirebaseFirestore.instance.collection("jobs").add(job.toFirestore());
-    // jobs.add(job);
-    // notifyListeners();
+  Future add(Shopping shopping) async{
+    await FirebaseFirestore.instance.collection("shopping").add(shopping.toFirestore());
   }
 }

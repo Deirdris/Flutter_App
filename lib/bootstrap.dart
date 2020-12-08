@@ -1,38 +1,16 @@
-import 'package:chores_flutter/data/chores_user.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:chores_flutter/controllers//user_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 
-class Bootstrap extends StatefulWidget {
-  @override
-  _BootstrapState createState() => _BootstrapState();
-}
-
-class _BootstrapState extends State<Bootstrap> {
-  Future initFuture;
-
-  Future init(context) async {
-    await Firebase.initializeApp();
-    var provider = Provider.of<ChoresUser>(context, listen: false);
-    bool isAuthenticated = await Provider.of<ChoresUser>(context, listen: false).checkAuthStatus();
-    if(!isAuthenticated){
-      await Provider.of<ChoresUser>(context, listen: false).signin();
-    }else{
-      await provider.fetchUserData();
-    }
-  }
+class Bootstrap extends StatelessWidget {
+  final userController = Get.put(UserController(), permanent: true);
 
   @override
   Widget build(BuildContext context) {
-    if(initFuture == null){
-      initFuture = init(context);
-    }
-
     return Container(
-      // width: MediaQuery.of(context),
       color: Colors.white,
       child: FutureBuilder(
-        future: initFuture,
+        future: userController.fetchFuture,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -52,3 +30,4 @@ class _BootstrapState extends State<Bootstrap> {
     );
   }
 }
+
