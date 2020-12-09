@@ -16,12 +16,12 @@ final routes = {
   '/job': RouteEntry(
     title: 'Robota',
     builder: (context) => ChoresPage(),
-    icon: Icons.shopping_cart_outlined,
+    icon: Icons.cleaning_services_outlined,
   ),
   '/shopping': RouteEntry(
     title: 'Lista zakupów',
     builder: (context) => ShoppingPage(),
-    icon: Icons.cleaning_services_outlined,
+    icon: Icons.shopping_cart_outlined,
   ),
   '/charts': RouteEntry(
     title: 'Wykresiki',
