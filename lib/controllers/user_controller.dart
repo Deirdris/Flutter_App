@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chores_flutter/data/user_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -42,7 +43,7 @@ class UserController extends GetxController {
       );
       await userDoc.set(userData.toFirestore());
     } else {
-      userData = UserData.fromFirestore(documentSnapshot.data());
+      userData = UserData.fromFirestore(documentSnapshot);
     }
   }
 
@@ -78,40 +79,5 @@ class UserController extends GetxController {
 
   Future saveData() {
     return userDoc.set(userData.toFirestore());
-  }
-}
-
-class UserData {
-  UserData({
-    this.id,
-    this.displayName,
-    this.overallDuration,
-    this.sumSpent,
-  });
-
-  String id;
-  String displayName;
-  double overallDuration;
-  double sumSpent;
-
-  UserData.from(UserData other) {
-    displayName = other.displayName;
-    overallDuration = other.overallDuration;
-    sumSpent = other.sumSpent;
-  }
-
-  UserData.fromFirestore(Map data, [String id]) {
-    this.id = id;
-    displayName = data["displayName"];
-    overallDuration = data["overallDuration"] is int ? data['overallDuration'].toDouble() : data['overallDuration'];
-    sumSpent = data["sumSpent"] is int ? data["sumSpent"].toDouble() : data["sumSpent"];
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      "displayName": displayName,
-      "overallDuration": overallDuration,
-      "sumSpent": sumSpent,
-    };
   }
 }

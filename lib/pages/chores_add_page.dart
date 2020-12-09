@@ -1,5 +1,6 @@
-import 'package:chores_flutter/controllers//user_controller.dart';
-import 'package:chores_flutter/controllers//jobs_controller.dart';
+import 'package:chores_flutter/controllers/user_controller.dart';
+import 'package:chores_flutter/controllers/chores_controller.dart';
+import 'package:chores_flutter/data/chore.dart';
 import 'package:chores_flutter/widgets/spin_me.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
   final userController = Get.find<UserController>();
   bool isSaving = false;
 
-  Job formModel = Job();
+  Chore formModel = Chore();
 
   void unfocus() {
     FocusScopeNode currentFocus = FocusScope.of(context);
@@ -209,12 +210,12 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                           ..user = user.uid
                           ..userDisplayName = user.displayName.split(" ").first;
                         userController.userData.overallDuration += formModel.duration;
-                        await Get.find<JobsController>().add(Job.from(formModel));
+                        await Get.find<ChoresController>().add(Chore.from(formModel));
                         await userController.saveData();
                         formKey.currentState.reset();
                         durationController.clear();
                         dateController.clear();
-                        formModel = Job();
+                        formModel = Chore();
                         setState(() {
                           isSaving = false;
                         });

@@ -1,4 +1,4 @@
-import 'package:chores_flutter/controllers//user_controller.dart';
+import 'package:chores_flutter/controllers/user_controller.dart';
 import 'package:chores_flutter/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -132,7 +132,7 @@ class _DefaultScaffoldState extends State<DefaultScaffold> with SingleTickerProv
           ),
         ),
       ),
-      body: SafeArea(child: widget.body),
+      body: widget.body,
       bottomNavigationBar: widget.bottomNavigationBar,
     );
   }

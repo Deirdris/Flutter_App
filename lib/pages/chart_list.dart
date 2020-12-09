@@ -1,7 +1,10 @@
 import 'dart:math';
 
-import 'package:chores_flutter/controllers/jobs_controller.dart';
+import 'package:chores_flutter/controllers/chores_controller.dart';
 import 'package:chores_flutter/controllers/user_controller.dart';
+import 'package:chores_flutter/data/chore.dart';
+import 'package:chores_flutter/data/shopping.dart';
+import 'package:chores_flutter/data/user_data.dart';
 import 'package:chores_flutter/default_scaffold.dart';
 import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,7 +22,7 @@ extension DataSourceExtension on DataSource {
   getCollection() {
     switch (this) {
       case DataSource.jobs:
-        return 'jobs';
+        return 'chores';
       case DataSource.shopping:
         return 'shopping';
     }
@@ -34,12 +37,12 @@ extension DataSourceExtension on DataSource {
     }
   }
 
-  dynamic fromFirestore(Map data) {
+  dynamic fromFirestore(DocumentSnapshot docSnapshot) {
     switch (this) {
       case DataSource.jobs:
-        return Job.fromFirestore(data);
+        return Chore.fromFirestore(docSnapshot);
       case DataSource.shopping:
-        return Shopping.fromFirestore(data);
+        return Shopping.fromFirestore(docSnapshot);
     }
   }
 
@@ -111,7 +114,10 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
   fetchData() async {
     if (users == null) {
       var userQuerySnapshot = await FirebaseFirestore.instance.collection("users").get();
-      users = userQuerySnapshot.docs.map((element) => UserData.fromFirestore(element.data(), element.id)).toList();
+      users = userQuerySnapshot.docs.map((element) => UserData.fromFirestore(element)).toList();
+      users.forEach((element) {
+        print(element.id);
+      });
     }
     var querySnapshot = await FirebaseFirestore.instance
         .collection(dataSource().getCollection())
@@ -120,7 +126,7 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
     if (data == null) {
       data = {};
     }
-    data[dataSource()] = querySnapshot.docs.map((element) => dataSource().fromFirestore(element.data())).toList();
+    data[dataSource()] = querySnapshot.docs.map((element) => dataSource().fromFirestore(element)).toList();
     updateChartData();
   }
 

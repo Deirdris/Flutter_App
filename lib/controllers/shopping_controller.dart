@@ -1,51 +1,10 @@
 import 'dart:async';
 
+import 'package:chores_flutter/data/firestore_document.dart';
+import 'package:chores_flutter/data/shopping.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-
-class Shopping {
-  Shopping({
-    this.bought,
-    this.price,
-    this.date,
-    this.user,
-    this.userDisplayName,
-  });
-
-  String bought;
-  double price;
-  DateTime date;
-  String user;
-  String userDisplayName;
-  static String collection = "shopping";
-
-  Shopping.from(Shopping other) {
-    bought = other.bought;
-    price = other.price;
-    date = other.date;
-    user = other.user;
-    userDisplayName = other.userDisplayName;
-  }
-
-  Shopping.fromFirestore(Map data) {
-    bought = data["bought"];
-    price = data["price"] is int ? data["price"].toDouble() : data["price"];
-    date = data["date"].toDate();
-    user = data["user"];
-    userDisplayName = data["userDisplayName"];
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      "bought": bought,
-      "price": price,
-      "date": date,
-      "user": user,
-      "userDisplayName": userDisplayName,
-    };
-  }
-}
 
 class ShoppingController extends GetxController {
   final cart = RxList();
@@ -65,7 +24,7 @@ class ShoppingController extends GetxController {
         .listen((event) {
       event.docChanges.forEach((change) {
         if (change.type == DocumentChangeType.added) {
-          cart.add(Shopping.fromFirestore(change.doc.data()));
+          cart.add(Shopping.fromFirestore(change.doc));
         }
       });
       cart.sort((a,b) => b.date.millisecondsSinceEpoch - a.date.millisecondsSinceEpoch);

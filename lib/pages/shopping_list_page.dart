@@ -1,4 +1,5 @@
-import 'package:chores_flutter/controllers//shopping_controller.dart';
+import 'package:chores_flutter/controllers/shopping_controller.dart';
+import 'package:chores_flutter/data/shopping.dart';
 import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

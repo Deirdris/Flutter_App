@@ -4,8 +4,8 @@ import 'package:chores_flutter/data/chore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
-class JobsController extends GetxController {
-  final jobs = RxList();
+class ChoresController extends GetxController {
+  final chores = RxList();
 
   Future fetchFuture;
 
@@ -22,10 +22,10 @@ class JobsController extends GetxController {
         .listen((event) {
       event.docChanges.forEach((change) {
         if (change.type == DocumentChangeType.added) {
-          jobs.add(Chore.fromFirestore(change.doc.data()));
+          chores.add(Chore.fromFirestore(change.doc));
         }
       });
-      jobs.sort((a,b) => b.date.millisecondsSinceEpoch - a.date.millisecondsSinceEpoch);
+      chores.sort((a,b) => b.date.millisecondsSinceEpoch - a.date.millisecondsSinceEpoch);
       if (!completer.isCompleted) {
         completer.complete();
       }

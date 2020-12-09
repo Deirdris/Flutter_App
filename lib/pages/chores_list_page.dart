@@ -1,4 +1,5 @@
-import 'package:chores_flutter/controllers//jobs_controller.dart';
+import 'package:chores_flutter/controllers/chores_controller.dart';
+import 'package:chores_flutter/data/chore.dart';
 import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,7 +12,7 @@ class ChoresListPage extends StatefulWidget {
 }
 
 class _ChoresListPageState extends State<ChoresListPage> with AutomaticKeepAliveClientMixin {
-  final jobsController = Get.put(JobsController(), permanent: true);
+  final jobsController = Get.put(ChoresController(), permanent: true);
 
   @override
   bool get wantKeepAlive => true;
@@ -26,8 +27,8 @@ class _ChoresListPageState extends State<ChoresListPage> with AutomaticKeepAlive
       onDone: (_) => Obx(
         () => ListView(
           children: [
-            for (var job in jobsController.jobs) ...[
-              _Job(job: job),
+            for (var job in jobsController.chores) ...[
+              _Chore(job: job),
               marginBox,
             ],
           ],
@@ -37,12 +38,12 @@ class _ChoresListPageState extends State<ChoresListPage> with AutomaticKeepAlive
   }
 }
 
-class _Job extends StatelessWidget {
-  _Job({
+class _Chore extends StatelessWidget {
+  _Chore({
     @required this.job,
   });
 
-  final Job job;
+  final Chore job;
 
   @override
   Widget build(BuildContext context) {
