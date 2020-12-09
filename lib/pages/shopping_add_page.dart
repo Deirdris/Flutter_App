@@ -1,5 +1,6 @@
 import 'package:chores_flutter/controllers/user_controller.dart';
 import 'package:chores_flutter/data/shopping.dart';
+import 'package:chores_flutter/utils/always_disabled_focus_node.dart';
 import 'package:chores_flutter/widgets/spin_me.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +97,7 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
               alignment: Alignment.bottomRight,
               children: [
                 TextFormField(
+                  focusNode: AlwaysDisabledFocusNode(),
                   readOnly: true,
                   controller: dateController,
                   decoration: InputDecoration(

@@ -1,4 +1,5 @@
 import 'package:chores_flutter/controllers/user_controller.dart';
+import 'package:chores_flutter/default_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,7 +20,8 @@ class Bootstrap extends StatelessWidget {
           }
           if (snapshot.connectionState == ConnectionState.done) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              Navigator.of(context).pushReplacementNamed("/job");
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DefaultScaffold()));
+              // Navigator.of(context).pushReplacementNamed("/job");
             });
           }
           return Center(

@@ -178,7 +178,7 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
       future = fetchData();
     }
 
-    return DefaultScaffold(
+    return Scaffold(
       body: FutureHandler(
         future: future,
         onDone: (_) => Container(
@@ -301,12 +301,7 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
                                 BarChartRodData rod,
                                 int rodIndex,
                               ) {
-                                return BarTooltipItem(
-                                    rod.y.round().toString(),
-                                    TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ));
+                                return null;
                               }),
                         ),
                         titlesData: FlTitlesData(
@@ -343,7 +338,8 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
                                       .firstWhere((element) => element.user.id == users[i].id,
                                           orElse: () => ChartData())
                                       .sum,
-                                  colors: [Colors.blueGrey[800], Colors.red],
+                                  colors: [Colors.amber, Color(0xffFE8A7D)],
+                                  gradientColorStops: [0, 1],
                                   width: 18,
                                   borderRadius: BorderRadius.zero,
                                 )
@@ -351,6 +347,10 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
                               showingTooltipIndicators: [0],
                             ),
                         ],
+                        gridData: FlGridData(
+                          drawHorizontalLine: true,
+                          getDrawingHorizontalLine: (value) => FlLine(color: Colors.blueGrey[800], strokeWidth: 0.5)
+                        )
                       ),
                     ),
                   ),

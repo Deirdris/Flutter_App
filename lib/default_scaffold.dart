@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
@@ -20,8 +21,10 @@ class DefaultScaffold extends StatefulWidget {
 class _DefaultScaffoldState extends State<DefaultScaffold> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey drawerHeaderKey = GlobalKey();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
   final userController = Get.find<UserController>();
   AnimationController animationController;
+  final currentRoute = '/job'.obs;
 
   @override
   void initState() {
@@ -49,7 +52,7 @@ class _DefaultScaffoldState extends State<DefaultScaffold> with SingleTickerProv
           },
           splashRadius: 24,
         ),
-        title: Text(routes[ModalRoute.of(context).settings.name].title),
+        title: Obx(() => Text(routes[currentRoute].title)),
       ),
       drawer: Drawer(
         child: SafeArea(
@@ -80,9 +83,12 @@ class _DefaultScaffoldState extends State<DefaultScaffold> with SingleTickerProv
                         );
                         animationController.forward();
                         showMenu(context: context, position: position, items: [
-                          PopupMenuItem(child: Text("Wyloguj"), value: "logout",),
+                          PopupMenuItem(
+                            child: Text("Wyloguj"),
+                            value: "logout",
+                          ),
                         ]).then((value) {
-                          if(value == "logout"){
+                          if (value == "logout") {
                             GoogleSignIn().signOut();
                             FirebaseAuth.instance.signOut().then((value) => SystemNavigator.pop());
                           }
@@ -90,49 +96,72 @@ class _DefaultScaffoldState extends State<DefaultScaffold> with SingleTickerProv
                           return null;
                         });
                       },
-                      child: Padding(
+                      child: Container(
                         key: drawerHeaderKey,
+                        color: Colors.transparent,
                         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                         child: RotationTransition(
                           turns: animationController,
                           child: Icon(
                             Icons.arrow_drop_down,
-                            // isPopupMenuOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
                             color: Colors.white,
                           ),
                         ),
-                        // offset: Offset(0, 56),
-                        // itemBuilder: (_) => [
-                        //   PopupMenuItem(child: Text("Wyloguj")),
-                        // ],
                       ),
                     ),
                   ],
                 ),
-                for (var route in routesList)
-                  Container(
-                    color:
-                        route.key == ModalRoute.of(context).settings.name ? Colors.blueGrey[200] : Colors.blueGrey[100],
-                    child: ListTile(
-                      leading: Icon(
-                        route.value.icon,
-                        color: Colors.black,
-                      ),
-                      title: Text(
-                        route.value.title,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onTap: () {
-                        Navigator.pushReplacementNamed(context, route.key);
-                      },
-                    ),
+                Obx(
+                  () => Column(
+                    children: [
+                      for (var route in routesList)
+                        Container(
+                          color: route.key == currentRoute() ? Colors.blueGrey[200] : Colors.blueGrey[100],
+                          child: ListTile(
+                            leading: Icon(
+                              route.value.icon,
+                              color: Colors.black,
+                            ),
+                            title: Text(
+                              route.value.title,
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              if(currentRoute() == route.key){
+                                return;
+                              }
+                              currentRoute.value = route.key;
+                              navigatorKey.currentState.pushReplacementNamed(route.key);
+                            },
+                          ),
+                        ),
+                    ],
                   ),
+                ),
               ],
             ),
           ),
         ),
       ),
-      body: widget.body,
+      body: Navigator(
+        key: navigatorKey,
+        initialRoute: currentRoute(),
+        onGenerateRoute: (settings) {
+          print(settings.name);
+          if (settings.name == '/') {
+            return MaterialPageRoute(builder: (context) => Container(), settings: settings);
+          }
+          currentRoute.value = settings.name;
+          return GetPageRoute(
+            page: () => routes[settings.name].builder(context),
+            transitionDuration: Duration(milliseconds: 500),
+            settings: settings,
+            transition: Transition.topLevel,
+            curve: Curves.ease,
+          );
+        },
+      ),
       bottomNavigationBar: widget.bottomNavigationBar,
     );
   }

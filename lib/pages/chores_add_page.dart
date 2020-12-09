@@ -1,6 +1,7 @@
 import 'package:chores_flutter/controllers/user_controller.dart';
 import 'package:chores_flutter/controllers/chores_controller.dart';
 import 'package:chores_flutter/data/chore.dart';
+import 'package:chores_flutter/utils/always_disabled_focus_node.dart';
 import 'package:chores_flutter/widgets/spin_me.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +81,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
               decoration: InputDecoration(
                 labelText: 'Co zostało zrobione',
                 alignLabelWithHint: true,
+                contentPadding: EdgeInsets.only(top: 12, bottom: 8),
               ),
               textInputAction: TextInputAction.next,
               maxLength: 50,
@@ -91,6 +93,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
               alignment: Alignment.bottomRight,
               children: [
                 TextFormField(
+                  focusNode: AlwaysDisabledFocusNode(),
                   validator: (value) {
                     if (value.isEmpty) {
                       return '';
@@ -154,6 +157,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
               alignment: Alignment.bottomRight,
               children: [
                 TextFormField(
+                  focusNode: AlwaysDisabledFocusNode(),
                   validator: (value) {
                     if (value.isEmpty) {
                       return '';

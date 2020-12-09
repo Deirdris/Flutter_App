@@ -20,7 +20,7 @@ class ShoppingPage extends StatelessWidget {
   final currentIndex = 0.obs;
 
   Widget build(BuildContext context) {
-    return DefaultScaffold(
+    return Scaffold(
       body: PageView(
         controller: controller.pageController,
         onPageChanged: (index) {

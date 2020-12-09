@@ -17,8 +17,8 @@ class DefaultBottomNavigationBar extends StatelessWidget {
       showSelectedLabels: false,
       showUnselectedLabels: false,
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.article), label: ''),
-        BottomNavigationBarItem(icon: Icon(Icons.edit), label: ''),
+        BottomNavigationBarItem(icon: currentIndex == 0 ? Icon(Icons.article) : Icon(Icons.article_outlined), label: ''),
+        BottomNavigationBarItem(icon: currentIndex == 1 ? Icon(Icons.edit) : Icon(Icons.edit_outlined), label: ''),
       ],
       onTap: onTap,
     );
