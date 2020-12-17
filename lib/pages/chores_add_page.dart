@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class MinutePicker extends TimePickerModel {
-  MinutePicker(): super(currentTime: DateTime(0));
+  MinutePicker() : super(currentTime: DateTime(0));
 
   @override
   List<int> layoutProportions() {
@@ -64,6 +64,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     SizedBox marginBox = SizedBox(height: 16);
     SizedBox marginBox1 = SizedBox(height: 64);
+    dateController.text = dateController.text = DateFormat('dd.MM.yyyy').format(DateTime.now()).toString();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -78,6 +79,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                 }
                 return null;
               },
+              textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 labelText: 'Co zostało zrobione',
                 alignLabelWithHint: true,
@@ -124,7 +126,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                         cancelStyle: TextStyle(color: Colors.black.withAlpha(220)),
                       ),
                     ).then((value) {
-                      if(value != null){
+                      if (value != null) {
                         setState(() {
                           var duration = value.minute;
                           formModel.duration = duration;
@@ -180,6 +182,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
                     unfocus();
                     showDatePicker(
                       context: context,
+                      locale: const Locale('pl', ''),
                       initialDate: DateTime.now(),
                       firstDate: DateTime(2000),
                       lastDate: DateTime.now(),

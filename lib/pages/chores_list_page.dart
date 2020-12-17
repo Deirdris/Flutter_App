@@ -62,13 +62,25 @@ class _Chore extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
-                    child: Text(
-                  job.job,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    child: Tooltip(
+                  message: job.job,
+                  child: Text(
+                    job.job,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
                 )),
-                Text(
-                  job.userDisplayName,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                Padding(
+                  padding: const EdgeInsets.only(left: 12.0),
+                  child: Text(
+                    job.userDisplayName,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 SizedBox(width: 4),
                 Icon(

@@ -23,6 +23,7 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
   final userController = Get.find<UserController>();
   final productController = Get.put(ProductController());
   bool isSaving = false;
+  double decimal;
 
   Shopping formModel = Shopping();
 
@@ -47,6 +48,7 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
   Widget build(BuildContext context) {
     SizedBox marginBox = SizedBox(height: 16);
     SizedBox marginBox1 = SizedBox(height: 64);
+    dateController.text = dateController.text = DateFormat('dd.MM.yyyy').format(DateTime.now()).toString();
 
     return Overlay(
       initialEntries: [
@@ -59,6 +61,7 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
                 children: [
                   SearchInput<Product>(
                     controller: nameController,
+                    textCapitalization: TextCapitalization.sentences,
                     decoration: InputDecoration(
                       labelText: 'Co zostało kupione',
                       alignLabelWithHint: true,
@@ -101,7 +104,10 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
                       suffixIconConstraints: BoxConstraints(maxWidth: 32),
                     ),
                     onChanged: (value) {
+                      value = value.replaceAll(',', '.');
+                      print(value);
                       formModel.price = double.parse(value);
+                      print(formModel.price);
                     },
                     validator: (value) {
                       if (value.isEmpty) {
@@ -137,6 +143,7 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
                         onPressed: () {
                           showDatePicker(
                             context: context,
+                            locale : const Locale('pl', ''),
                             initialDate: DateTime.now(),
                             firstDate: DateTime(2000),
                             lastDate: DateTime.now(),
@@ -214,6 +221,7 @@ class SearchInput<T> extends StatefulWidget {
     this.onChanged,
     this.textInputAction,
     this.validator,
+    this.textCapitalization,
     @required this.searchFunction,
     @required this.resultBuilder,
     @required this.onResultPressed,
@@ -228,6 +236,7 @@ class SearchInput<T> extends StatefulWidget {
   final Future<List<T>> Function(String) searchFunction;
   final Widget Function(T) resultBuilder;
   final void Function(T) onResultPressed;
+  final textCapitalization;
 
   @override
   _SearchInputState<T> createState() => _SearchInputState();
@@ -305,6 +314,7 @@ class _SearchInputState<T> extends State<SearchInput<T>> {
     }
     return TextFormField(
       controller: widget.controller,
+      textCapitalization: widget.textCapitalization,
       focusNode: _focusNode,
       decoration: widget.decoration,
       textInputAction: widget.textInputAction,

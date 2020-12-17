@@ -61,9 +61,15 @@ class _Shopping extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
-                    child: Text(
-                  shopping.bought,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    child: Tooltip(
+                  message: shopping.bought,
+                  child: Text(
+                    shopping.bought,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
                 )),
                 Text(
                   shopping.userDisplayName,
@@ -90,7 +96,7 @@ class _Shopping extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        Text(shopping.price.toString(),
+                        Text(shopping.price.toStringAsFixed(2),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             )),
