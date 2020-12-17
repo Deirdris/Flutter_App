@@ -59,7 +59,8 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
 
   void initState() {
     super.initState();
-    dateController.text = dateController.text = DateFormat('dd.MM.yyyy').format(DateTime.now()).toString();
+    dateController.text = DateFormat('dd.MM.yyyy').format(DateTime.now()).toString();
+    formModel.date = DateTime.now();
   }
 
   @override
