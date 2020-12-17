@@ -57,6 +57,11 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
     super.dispose();
   }
 
+  void initState() {
+    super.initState();
+    dateController.text = dateController.text = DateFormat('dd.MM.yyyy').format(DateTime.now()).toString();
+  }
+
   @override
   bool get wantKeepAlive => true;
 
@@ -64,7 +69,6 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     SizedBox marginBox = SizedBox(height: 16);
     SizedBox marginBox1 = SizedBox(height: 64);
-    dateController.text = dateController.text = DateFormat('dd.MM.yyyy').format(DateTime.now()).toString();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),

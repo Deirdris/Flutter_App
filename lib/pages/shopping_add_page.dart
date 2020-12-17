@@ -36,6 +36,12 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
   }
 
   @override
+  void initState() {
+    super.initState();
+    dateController.text = dateController.text = DateFormat('dd.MM.yyyy').format(DateTime.now()).toString();
+  }
+
+  @override
   void dispose() {
     dateController.dispose();
     super.dispose();
@@ -48,7 +54,6 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
   Widget build(BuildContext context) {
     SizedBox marginBox = SizedBox(height: 16);
     SizedBox marginBox1 = SizedBox(height: 64);
-    dateController.text = dateController.text = DateFormat('dd.MM.yyyy').format(DateTime.now()).toString();
 
     return Overlay(
       initialEntries: [
