@@ -1,17 +1,13 @@
 import 'dart:math';
 
-import 'package:chores_flutter/controllers/chores_controller.dart';
-import 'package:chores_flutter/controllers/user_controller.dart';
 import 'package:chores_flutter/data/chore.dart';
 import 'package:chores_flutter/data/shopping.dart';
 import 'package:chores_flutter/data/user_data.dart';
-import 'package:chores_flutter/default_scaffold.dart';
 import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
-import 'package:chores_flutter/controllers/shopping_controller.dart';
 
 enum DataSource {
   jobs,
@@ -19,7 +15,7 @@ enum DataSource {
 }
 
 extension DataSourceExtension on DataSource {
-  getCollection() {
+  get collection {
     switch (this) {
       case DataSource.jobs:
         return 'chores';
@@ -28,7 +24,7 @@ extension DataSourceExtension on DataSource {
     }
   }
 
-  getTitle() {
+  get title {
     switch (this) {
       case DataSource.jobs:
         return 'Stracony czas';
@@ -72,7 +68,7 @@ enum ChartType {
 }
 
 extension ChartExtension on ChartType {
-  getName() {
+  get name {
     switch (this) {
       case ChartType.week:
         return 'Tydzień';
@@ -96,7 +92,7 @@ class ChartList extends StatefulWidget {
   _ChartListState createState() => _ChartListState();
 }
 
-class _ChartListState extends State<ChartList> with SingleTickerProviderStateMixin {
+class _ChartListState extends State<ChartList> with TickerProviderStateMixin {
   Future future;
   Map<DataSource, List<dynamic>> data;
   List<UserData> users;
@@ -120,7 +116,7 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
       });
     }
     var querySnapshot = await FirebaseFirestore.instance
-        .collection(dataSource().getCollection())
+        .collection(dataSource().collection)
         .where("date", isGreaterThan: DateTime.now().subtract(Duration(days: 30)))
         .get();
     if (data == null) {
@@ -160,6 +156,7 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
 
+    future = fetchData();
     animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 350),
@@ -174,14 +171,10 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    if (data == null) {
-      future = fetchData();
-    }
-
     return Scaffold(
       body: FutureHandler(
         future: future,
-        onDone: (_) => Container(
+        onDone: (_) => Padding(
           padding: const EdgeInsets.only(
             top: 18,
             left: 8,
@@ -202,7 +195,7 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
                         Expanded(
                           child: RawChip(
                             label: Text(
-                              type.getName(),
+                              type.name,
                               style: TextStyle(
                                   color: type == chartType() ? Colors.black : Colors.white,
                                   fontWeight: FontWeight.w500),
@@ -215,6 +208,7 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
                             selected: type == chartType(),
                             selectedColor: Colors.amber,
                             backgroundColor: Theme.of(context).primaryColor,
+                            pressElevation: 0,
                           ),
                         ),
                     ],
@@ -237,7 +231,7 @@ class _ChartListState extends State<ChartList> with SingleTickerProviderStateMix
                       Expanded(
                         child: Obx(
                           () => Text(
-                            dataSource().getTitle(),
+                            dataSource().title,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).primaryColor),
                             textAlign: TextAlign.center,

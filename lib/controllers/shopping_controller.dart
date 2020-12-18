@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:chores_flutter/data/firestore_document.dart';
 import 'package:chores_flutter/data/shopping.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 

@@ -29,9 +29,10 @@ final theme = ThemeData(
   buttonTheme: ButtonThemeData(
     buttonColor: blueGrey,
   ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: Colors.blueGrey[900],
-      unselectedItemColor: Colors.blueGrey[600],
-      selectedItemColor: Colors.blueGrey[100],
-    ),
+  bottomNavigationBarTheme: BottomNavigationBarThemeData(
+    backgroundColor: Colors.blueGrey[900],
+    unselectedItemColor: Colors.blueGrey[600],
+    selectedItemColor: Colors.blueGrey[100],
+  ),
+  textSelectionColor: Colors.blueGrey[500],
 );

@@ -23,7 +23,6 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
   final userController = Get.find<UserController>();
   final productController = Get.put(ProductController());
   bool isSaving = false;
-  double decimal;
 
   Shopping formModel = Shopping();
 
@@ -53,6 +52,7 @@ class _ChoresAddPageState extends State<ShoppingAddPage> with AutomaticKeepAlive
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     SizedBox marginBox = SizedBox(height: 16);
     SizedBox marginBox1 = SizedBox(height: 64);
 
@@ -299,7 +299,6 @@ class _SearchInputState<T> extends State<SearchInput<T>> {
                   ListTile(
                     title: widget.resultBuilder(result),
                     onTap: () {
-                      _overlayEntry.remove();
                       _focusNode.unfocus();
                       searchResults.clear();
                       widget.onResultPressed(result);

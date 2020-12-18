@@ -1,4 +1,3 @@
-import 'package:chores_flutter/default_scaffold.dart';
 import 'package:chores_flutter/pages/chores_add_page.dart';
 import 'package:chores_flutter/pages/chores_list_page.dart';
 import 'package:chores_flutter/pages/default_bottom_navigation_bar.dart';

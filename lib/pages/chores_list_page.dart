@@ -4,7 +4,6 @@ import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class ChoresListPage extends StatefulWidget {
   @override
@@ -62,19 +61,20 @@ class _Chore extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
-                    child: Tooltip(
-                  message: job.job,
-                  child: Text(
-                    job.job,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                  child: Tooltip(
+                    message: job.job,
+                    child: Text(
+                      job.job,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      softWrap: false,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
-                )),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(left: 12.0),
                   child: Text(
@@ -101,27 +101,30 @@ class _Chore extends StatelessWidget {
                       "Czas trwania",
                       style: TextStyle(color: Theme.of(context).hintColor),
                     ),
-                    Text('${job.duration} minut',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        )),
+                    Text(
+                      '${job.duration} minut',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 )),
                 Expanded(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Data wykonania",
-                      style: TextStyle(color: Theme.of(context).hintColor),
-                    ),
-                    Text(DateFormat('dd.MM.yyyy').format(job.date),
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        )),
-                  ],
-                )),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Data wykonania",
+                        style: TextStyle(color: Theme.of(context).hintColor),
+                      ),
+                      Text(DateFormat('dd.MM.yyyy').format(job.date),
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ],
+                  ),
+                ),
               ],
             ),
           ],

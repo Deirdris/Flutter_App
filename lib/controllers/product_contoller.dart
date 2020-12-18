@@ -4,11 +4,12 @@ import 'package:get/get.dart';
 
 class ProductController extends GetxController {
   Future add(String name, double price) async {
-    var productDoc = FirebaseFirestore.instance.collection("products").doc(name);
+    var productDoc = FirebaseFirestore.instance.collection("products").doc(name.toLowerCase());
     DocumentSnapshot documentSnapshot = await productDoc.get();
 
     if (!documentSnapshot.exists) {
       var product = Product(
+        name: name,
         price: price,
       );
       await productDoc.set(product.toFirestore());
@@ -16,6 +17,7 @@ class ProductController extends GetxController {
   }
 
   Future<List<Product>> search(String name) async {
+    name = name.toLowerCase();
     var querySnapshot = await FirebaseFirestore.instance
         .collection("products")
         .where(FieldPath.documentId, isGreaterThanOrEqualTo: name)

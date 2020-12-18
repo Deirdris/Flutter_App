@@ -1,6 +1,5 @@
 import 'package:chores_flutter/pages/default_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:chores_flutter/default_scaffold.dart';
 import 'package:chores_flutter/pages/shopping_add_page.dart';
 import 'package:chores_flutter/pages/shopping_list_page.dart';
 import 'package:get/get.dart';

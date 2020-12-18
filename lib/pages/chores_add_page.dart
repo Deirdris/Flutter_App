@@ -68,6 +68,7 @@ class _ChoresAddPageState extends State<ChoresAddPage> with AutomaticKeepAliveCl
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     SizedBox marginBox = SizedBox(height: 16);
     SizedBox marginBox1 = SizedBox(height: 64);
 

@@ -34,7 +34,7 @@ class ChoresController extends GetxController {
     fetchFuture = completer.future;
   }
 
-  Future add(Chore job) async {
-    await FirebaseFirestore.instance.collection("chores").add(job.toFirestore());
+  Future add(Chore chore) async {
+    await FirebaseFirestore.instance.collection("chores").add(chore.toFirestore());
   }
 }
