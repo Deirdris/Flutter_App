@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:chores_flutter/data/chore.dart';
 import 'package:chores_flutter/data/shopping.dart';
 import 'package:chores_flutter/data/user_data.dart';
+import 'package:chores_flutter/widgets/choice_button.dart';
 import 'package:chores_flutter/widgets/future_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -193,22 +194,20 @@ class _ChartListState extends State<ChartList> with TickerProviderStateMixin {
                     children: [
                       for (var type in ChartType.values)
                         Expanded(
-                          child: RawChip(
-                            label: Text(
+                          child: ChoiceButton(
+                            child: Text(
                               type.name,
-                              style: TextStyle(
-                                  color: type == chartType() ? Colors.black : Colors.white,
-                                  fontWeight: FontWeight.w500),
+                              style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                             onPressed: () {
                               chartType.value = type;
                               updateChartData();
                             },
-                            showCheckmark: false,
-                            selected: type == chartType(),
-                            selectedColor: Colors.amber,
                             backgroundColor: Theme.of(context).primaryColor,
-                            pressElevation: 0,
+                            selectedBackgroundColor: Colors.amber,
+                            textColor: Colors.white,
+                            selectedTextColor: Colors.black,
+                            selected: type == chartType(),
                           ),
                         ),
                     ],
@@ -281,71 +280,70 @@ class _ChartListState extends State<ChartList> with TickerProviderStateMixin {
                   child: Obx(
                     () => BarChart(
                       BarChartData(
-                        alignment: BarChartAlignment.spaceAround,
-                        maxY: maxY + 5,
-                        barTouchData: BarTouchData(
-                          enabled: false,
-                          touchTooltipData: BarTouchTooltipData(
-                              tooltipBgColor: Colors.transparent,
-                              tooltipPadding: const EdgeInsets.all(0),
-                              tooltipBottomMargin: 4,
-                              getTooltipItem: (
-                                BarChartGroupData group,
-                                int groupIndex,
-                                BarChartRodData rod,
-                                int rodIndex,
-                              ) {
-                                return null;
-                              }),
-                        ),
-                        titlesData: FlTitlesData(
-                          show: true,
-                          bottomTitles: SideTitles(
-                            showTitles: true,
-                            getTextStyles: (value) => TextStyle(
-                                color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold, fontSize: 14),
-                            margin: 20,
-                            getTitles: (double value) {
-                              return users[value.toInt()].displayName;
-                            },
+                          alignment: BarChartAlignment.spaceAround,
+                          maxY: maxY + 5,
+                          barTouchData: BarTouchData(
+                            enabled: false,
+                            touchTooltipData: BarTouchTooltipData(
+                                tooltipBgColor: Colors.transparent,
+                                tooltipPadding: const EdgeInsets.all(0),
+                                tooltipBottomMargin: 4,
+                                getTooltipItem: (
+                                  BarChartGroupData group,
+                                  int groupIndex,
+                                  BarChartRodData rod,
+                                  int rodIndex,
+                                ) {
+                                  return null;
+                                }),
                           ),
-                          leftTitles: SideTitles(
-                            showTitles: true,
-                            interval: max(maxY ~/ 30, 1) * 5.0,
-                            getTextStyles: (value) => TextStyle(
-                                color: Theme.of(context).primaryColor, fontSize: 12, fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        borderData: FlBorderData(
-                          show: true,
-                          border: Border(
-                              bottom: BorderSide(color: Theme.of(context).primaryColor),
-                              left: BorderSide(color: Theme.of(context).primaryColor)),
-                        ),
-                        barGroups: [
-                          for (var i = 0; i < users.length; i++)
-                            BarChartGroupData(
-                              x: i,
-                              barRods: [
-                                BarChartRodData(
-                                  y: chartDataList
-                                      .firstWhere((element) => element.user.id == users[i].id,
-                                          orElse: () => ChartData())
-                                      .sum,
-                                  colors: [Colors.amber, Color(0xffFE8A7D)],
-                                  gradientColorStops: [0, 1],
-                                  width: 18,
-                                  borderRadius: BorderRadius.zero,
-                                )
-                              ],
-                              showingTooltipIndicators: [0],
+                          titlesData: FlTitlesData(
+                            show: true,
+                            bottomTitles: SideTitles(
+                              showTitles: true,
+                              getTextStyles: (value) => TextStyle(
+                                  color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold, fontSize: 14),
+                              margin: 20,
+                              getTitles: (double value) {
+                                return users[value.toInt()].displayName;
+                              },
                             ),
-                        ],
-                        gridData: FlGridData(
-                          drawHorizontalLine: true,
-                          getDrawingHorizontalLine: (value) => FlLine(color: Colors.blueGrey[800], strokeWidth: 0.5)
-                        )
-                      ),
+                            leftTitles: SideTitles(
+                              showTitles: true,
+                              interval: max(maxY ~/ 30, 1) * 5.0,
+                              getTextStyles: (value) => TextStyle(
+                                  color: Theme.of(context).primaryColor, fontSize: 12, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          borderData: FlBorderData(
+                            show: true,
+                            border: Border(
+                                bottom: BorderSide(color: Theme.of(context).primaryColor),
+                                left: BorderSide(color: Theme.of(context).primaryColor)),
+                          ),
+                          barGroups: [
+                            for (var i = 0; i < users.length; i++)
+                              BarChartGroupData(
+                                x: i,
+                                barRods: [
+                                  BarChartRodData(
+                                    y: chartDataList
+                                        .firstWhere((element) => element.user.id == users[i].id,
+                                            orElse: () => ChartData())
+                                        .sum,
+                                    colors: [Colors.amber, Color(0xffFE8A7D)],
+                                    gradientColorStops: [0, 1],
+                                    width: 18,
+                                    borderRadius: BorderRadius.zero,
+                                  )
+                                ],
+                                showingTooltipIndicators: [0],
+                              ),
+                          ],
+                          gridData: FlGridData(
+                              drawHorizontalLine: true,
+                              getDrawingHorizontalLine: (value) =>
+                                  FlLine(color: Colors.blueGrey[800], strokeWidth: 0.5))),
                     ),
                   ),
                 ),
